@@ -1,6 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "rubik";
+  src: url("../public/Rubik-Bold.ttf");
+}
+
 .App {
   text-align: center;
 }

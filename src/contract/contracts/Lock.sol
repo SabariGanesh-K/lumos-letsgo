@@ -25,6 +25,7 @@ contract Lock {
         uint256 raised;
         uint256 raising;
         bool InDispute;
+        string title;
         string desc;
         address admin;
         uint256 timeadded;
@@ -40,7 +41,11 @@ contract Lock {
     mapping(address => UserInfo) public userInfo;
     mapping(uint256 => Raise) public raiseInfo;
 
-    function performRaise(uint256 raising, string memory desc) public {
+    function performRaise(
+        uint256 raising,
+        string memory title,
+        string memory desc
+    ) public {
         require(
             !userInfo[msg.sender].deactivated,
             "User banned from the network"
@@ -48,6 +53,7 @@ contract Lock {
         raiseInfo[counter].raising = raising;
         raiseInfo[counter].admin = msg.sender;
         raiseInfo[counter].desc = desc;
+        raiseInfo[counter].title = title;
         raiseInfo[counter].timeadded = block.timestamp;
         userInfo[msg.sender].raiseIds.push(counter);
         counter++;
