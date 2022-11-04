@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import { AppConfig } from './context/AppConfig';
 
@@ -6,7 +6,9 @@ function MakeRaise() {
     const { makeRaise } = useContext(AppConfig);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [funds, setFunds] = useState();
+    const [funds, setFunds] = useState("");
+
+
     return (
         <div className='maindash bg-gradient-to-b from-red-600 to-pink-600 m-0'>
             <Navbar />
@@ -33,7 +35,7 @@ function MakeRaise() {
                         <input type="checkbox" className='ml-0' />
                         <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolore sapiente excepturi vitae?</div>
                     </div>
-                    <button onClick={() => makeRaise(funds, title, description)} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg  drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2 w-fit'> <div>Publish Raise</div> </button>
+                    <button onClick={() => makeRaise(parseInt(funds), title, description)} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg  drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2 w-fit'> <div>Publish Raise</div> </button>
                 </div>
             </main>
         </div>
