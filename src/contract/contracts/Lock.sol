@@ -14,8 +14,8 @@ contract Lock {
         uint256 against_votes;
         uint256 id;
         uint256 start;
-        mapping(address => bool) voted;
     }
+    mapping(uint256 => mapping(address => bool)) public voted;
     mapping(address => bool) public raisingStat;
     mapping(address => uint256[]) public raiseIds;
     struct UserInfo {
@@ -130,13 +130,10 @@ contract Lock {
         bool result
     ) external {
         require(
-            raiseInfo[raiseId].transactions.length >= transactioId,
+            transactions[raiseId].length >= transactioId,
             "Invalid transaction id"
         );
-        require(
-            !raiseInfo[raiseId].transactions[transactioId].voted[msg.sender],
-            "Voting completed by sender"
-        );
+        require(!voted[raiseId][msg.sender], "Voting completed by sender");
         require(donors[raiseId][msg.sender], "Only donors can vote");
         if (result) {
             transactions[raiseId][transactioId].for_votes++;
@@ -147,12 +144,11 @@ contract Lock {
 
     function _checkDisputes(uint256 raiseId) private view returns (bool) {
         bool res = false;
-        for (uint256 i = 0; i < raiseInfo[raiseId].transactions.length; i++) {
+        for (uint256 i = 0; i < transactions[raiseId].length; i++) {
             if (
-                block.timestamp - raiseInfo[raiseId].transactions[i].start >
-                1 days &&
+                block.timestamp - transactions[raiseId][i].start > 1 days &&
                 transactions[raiseId][i].against_votes >=
-                raiseInfo[raiseId].transactions[i].for_votes
+                transactions[raiseId][i].for_votes
             ) {
                 res = true;
 
