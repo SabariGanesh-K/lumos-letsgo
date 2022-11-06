@@ -12,7 +12,7 @@ export const AppProvider = ({ children }) => {
     const [raiseList, setraiseList] = useState()
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contractAddress = '0x19F3De34ce37dADB6e81d19518f3241A2B1C2686';
+    const contractAddress = '0xC36F192a607805Ca31216D6EfB5Ac8CDD781c1E4';
     const abi = contractabi.abi;
     const providerContract = new ethers.Contract(contractAddress, abi, provider);
     const signer = provider.getSigner();
@@ -58,20 +58,17 @@ export const AppProvider = ({ children }) => {
         const newsignedContract = new ethers.Contract(contractAddress, abi, signer);
         const raiseCount = await newsignedContract.userInfo(currentUser)
         let temp = []
-        for (let i = 0; i < parseInt(raiseCount.currentRaise._hex) + 1; i++) {
+        for (let i = 0; i <= parseInt(raiseCount.currentRaise._hex) + 1; i++) {
             const raise = await newsignedContract.raiseInfo(i);
             temp.push([raise]);
         }
-        if (temp) {
-            setraiseList(temp)
-            return temp;
-        }
+        return temp;
     }
 
-    const donateToRaise = async (raiseId) => {
+    const donateToRaise = async (raiseId, amt) => {
         const signer = provider.getSigner();
         const newsignedContract = new ethers.Contract(contractAddress, abi, signer);
-        await newsignedContract.donateRaise(raiseId);
+        await newsignedContract.donateRaise(raiseId, { value: ethers.utils.parseEther(String(amt)) });
     }
 
 
@@ -85,7 +82,6 @@ export const AppProvider = ({ children }) => {
             }
             requestAccounts();
             returnRaiseProgress();
-            console.log(raiseList)
         }
         else {
             console.log("Please install Metamask to continue")

@@ -4,11 +4,36 @@ import MoneyIcon from '@mui/icons-material/Money';
 import { Link } from 'react-router-dom';
 import { AppConfig } from './context/AppConfig';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, Button, CircularProgress, Modal, Typography } from '@mui/material';
+import Money from '@mui/icons-material/Money';
+import { MoneyOutlined } from '@mui/icons-material';
 function Home() {
     const { providerConnected, returnAllRaiseProgress, donateToRaise } = useContext(AppConfig);
     const [loader, setLoader] = useState(false)
     const [dashboardRaises, setDashboardRaises] = useState([])
+    const [raiseId, setRaiseId] = useState();
+    const [donateAmt, setDonateAmt] = useState("")
+
+    // modal
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = async (raiseId) => {
+        setOpen(true);
+        setRaiseId(raiseId);
+    }
+    const handleClose = () => setOpen(false);
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'rgba(236, 72, 153, 0.87)',
+        border: '2px solid rgba(144, 72, 153, 0.87)',
+        borderRadius: "12px",
+        boxShadow: 24,
+        p: 4,
+    };
+
     const userData = async () => {
         setLoader(true);
         const temp = await returnAllRaiseProgress();
@@ -16,8 +41,8 @@ function Home() {
         setLoader(false);
     }
 
-    const donateRaise = async (raiseId) => {
-        await donateToRaise(raiseId);
+    const donateRaise = async (raiseId, amt) => {
+        await donateToRaise(raiseId, amt);
     }
 
     useEffect(() => {
@@ -28,6 +53,23 @@ function Home() {
     return (
         <div>
             <Navbar />
+            {/* <Button onClick={handleOpen}>Open modal</Button> */}
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style} >
+                    <div className='flex flex-col gap-2 items-center justify-center'>
+                        <div className='m-2 text-2xl font-rubik font-semibold text-center'>Donate Amount</div>
+                        <div className='mt-4 flex gap-2 justify-center items-center'>
+                            <input className='rounded-xl p-3' type="text" value={donateAmt} onChange={e => setDonateAmt(e.target.value)} /> <p className='font-rubik font-semibold'>ETH</p>
+                        </div>
+                        <button onClick={() => donateRaise(raiseId, donateAmt)} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'> <MoneyOutlined /> <div>Donate</div> </button>
+                    </div>
+                </Box>
+            </Modal>
             <main className='maindash bg-gradient-to-b from-red-600 to-pink-600 m-0 pb-20'>
                 <div className="headers flex flex-col justify-center items-center max-w-md mx-auto relative top-24 gap-8">
                     <div className="title font-extrabold text-5xl font-rubik drop-shadow-2xl text-gray-900">HashFunder</div>
@@ -48,16 +90,21 @@ function Home() {
                             <div className='font-rubik'>If the Dashboard is not loading at all(max=30s) either check your internet connection or maybe route into a different page and return back to the home page.</div>
                         </Box> : dashboardRaises.map((rinfo) => (
                             <div className='mx-2 my-4 px-4 py-2 rounded-xl flex justify-between items-center bg-gradient-to-r from-red-400 to-purple-400 opacity-95 drop-shadow-md border-2 border-red-400 hover:scale-[1.02] transition-all ease-in-out' >
-                                <div>
-                                    <h3 className='font-rubik font-semibold text-lg'>{rinfo[0][4]}</h3>
-                                    <p className='max-w-sm font-rubik'>{rinfo[0][5]}</p>
-                                    <div className='flex gap-4 mt-2'>
-                                        <button className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>More</button>
-                                        <button onClick={() => donateRaise(dashboardRaises.indexOf(rinfo))} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>Donate</button>
+                                <div className='flex'>
+                                    <div>
+                                        <h3 className='font-rubik font-semibold text-lg'>{rinfo[0][4]}</h3>
+                                        <p className='max-w-sm font-rubik'>{rinfo[0][5]}</p>
+                                        <div className='flex gap-4 mt-2'>
+                                            <button className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>More</button>
+                                            <button onClick={() => handleOpen(dashboardRaises.indexOf(rinfo))} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>Donate</button>
+                                        </div>
+                                    </div>
+                                    <div>
+
                                     </div>
                                 </div>
                                 <div className="progressbar font-rubik font-semibold" style={{ width: 100, height: 100 }}>
-                                    <CircularProgressbar value={2} text={12 === 100 ? "Complete" : 12 + "% raised"} styles={buildStyles({
+                                    <CircularProgressbar value={((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(2)} text={((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(2) === 100 ? "Complete" : ((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(1) + "% raised"} styles={buildStyles({
                                         rotation: -0.25,
                                         strokeLinecap: 'round',
                                         textSize: '12px',

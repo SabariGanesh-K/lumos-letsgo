@@ -37,7 +37,7 @@ function User() {
                                         <button className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>More</button>
                                     </div>
                                     <div className="progressbar font-rubik font-semibold" style={{ width: 100, height: 100 }}>
-                                        <CircularProgressbar value={2} text={12 === 100 ? "Complete" : 12 + "% raised"} styles={buildStyles({
+                                        <CircularProgressbar value={((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(2)} text={((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(2) === 100 ? "Complete" : ((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(1) + "% raised"} styles={buildStyles({
                                             rotation: -0.25,
                                             strokeLinecap: 'round',
                                             textSize: '12px',

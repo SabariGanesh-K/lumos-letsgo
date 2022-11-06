@@ -36,9 +36,9 @@ contract Lock {
         uint256 timeadded;
         uint256 timeclosed;
         uint256 lastTransaction;
-        Transaction[] transactions;
-        mapping(address => bool) donor;
     }
+
+    mapping(uint256 => mapping(address => bool)) donors;
 
     Raise[] allRaiseData;
 
@@ -65,7 +65,6 @@ contract Lock {
         raiseInfo[counter].desc = desc;
         raiseInfo[counter].title = title;
         raiseInfo[counter].timeadded = block.timestamp;
-        allRaiseData.push(raiseInfo[counter]);
         userInfo[msg.sender].currentRaise = counter;
         userInfo[msg.sender].raiseIds.push(counter);
         userInfo[msg.sender].wallet = msg.sender;
@@ -79,7 +78,7 @@ contract Lock {
                 msg.value / 1 ether,
             "More than necessary"
         );
-        raiseInfo[raiseId].donor[msg.sender] = true;
+        donors[raiseId][msg.sender] = true;
         raiseInfo[raiseId].raised += msg.value / 1 ether;
     }
 
@@ -99,7 +98,7 @@ contract Lock {
             "Low balance"
         );
         require(
-            raiseInfo[raiseId].admin == msg.sender,
+            raiseInfo[raiseId].raiser == msg.sender,
             "Only admin have access"
         );
         require(
@@ -138,7 +137,7 @@ contract Lock {
             !raiseInfo[raiseId].transactions[transactioId].voted[msg.sender],
             "Voting completed by sender"
         );
-        require(raiseInfo[raiseId].donor[msg.sender], "Only donors can vote");
+        require(donors[raiseId][msg.sender], "Only donors can vote");
         if (result) {
             raiseInfo[raiseId].transactions[transactioId].for_votes++;
         } else {
