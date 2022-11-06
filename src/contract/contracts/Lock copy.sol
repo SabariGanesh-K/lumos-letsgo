@@ -37,21 +37,12 @@ contract Lock {
         uint256 timeadded;
         uint256 timeclosed;
         uint256 lastTransaction;
-<<<<<<< HEAD
-    }
-
-    mapping(uint256 => mapping(address => bool)) donors;
-
-    Raise[] allRaiseData;
-
-=======
         // Transaction[] transactions;
         // mapping(address=>bool)  donor;
     }
 
   mapping(uint256 => mapping(address => bool)) public donors;
   mapping(uint256 =>  Transaction[]) public transactions;
->>>>>>> 7b4a5db419b56b4dfb4ecf79eedc49a513c75cc4
     uint256 RInd;
     uint256 Tind;
     uint256 raisect;
@@ -80,46 +71,6 @@ contract Lock {
         counter++;
     }
 
-<<<<<<< HEAD
-    function donateRaise(uint256 raiseId) external payable {
-        require(!raiseInfo[raiseId].InDispute, "raise in dispute");
-        require(
-            raiseInfo[raiseId].raising - raiseInfo[raiseId].raised >=
-                msg.value / 1 ether,
-            "More than necessary"
-        );
-        donors[raiseId][msg.sender] = true;
-        raiseInfo[raiseId].raised += msg.value / 1 ether;
-    }
-
-    function handleTransaction(
-        address payable client,
-        uint256 amount,
-        uint256 raiseId,
-        string memory purpose,
-        string memory attach_evidence
-    ) external {
-        require(
-            raiseInfo[raiseId].raising - raiseInfo[raiseId].raised == 0,
-            "Raising not yet completed"
-        );
-        require(
-            raiseInfo[raiseId].raising - raiseInfo[raiseId].spent > 0,
-            "Low balance"
-        );
-        require(
-            raiseInfo[raiseId].raiser == msg.sender,
-            "Only admin have access"
-        );
-        require(
-            raiseInfo[raiseId].lastTransaction == 0 ||
-                block.timestamp - raiseInfo[raiseId].lastTransaction >= 1 days,
-            "Only 1 transaction allowed per day"
-        );
-        bool dispute = _checkDisputes(raiseId);
-        if (dispute) {
-            raiseInfo[raiseId].InDispute = true;
-=======
     function donateRaise(uint256 raiseId) payable external{
         require(!raiseInfo[raiseId].InDispute,"raise in dispute");
         require(raiseInfo[raiseId].raising-raiseInfo[raiseId].raised>=msg.value/1 ether,"More than necessary");
@@ -140,7 +91,6 @@ contract Lock {
         if(dispute){
             raiseInfo[raiseId].InDispute=true;
             
->>>>>>> 7b4a5db419b56b4dfb4ecf79eedc49a513c75cc4
         }
         require(!dispute,"Raise entered dispute");
         uint256 id =transactions[raiseId].length;
@@ -165,27 +115,6 @@ contract Lock {
         else{
            transactions[raiseId][transactioId].against_votes++;
 
-<<<<<<< HEAD
-    function Vote(
-        uint256 raiseId,
-        uint256 transactioId,
-        bool result
-    ) external {
-        require(
-            raiseInfo[raiseId].transactions.length >= transactioId,
-            "Invalid transaction id"
-        );
-        require(
-            !raiseInfo[raiseId].transactions[transactioId].voted[msg.sender],
-            "Voting completed by sender"
-        );
-        require(donors[raiseId][msg.sender], "Only donors can vote");
-        if (result) {
-            raiseInfo[raiseId].transactions[transactioId].for_votes++;
-        } else {
-            raiseInfo[raiseId].transactions[transactioId].against_votes++;
-=======
->>>>>>> 7b4a5db419b56b4dfb4ecf79eedc49a513c75cc4
         }
 
     }
