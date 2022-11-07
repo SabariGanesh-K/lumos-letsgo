@@ -81,7 +81,8 @@ function Home() {
             <main className='maindash bg-gradient-to-b from-red-600 to-pink-600 m-0 pb-32'>
                 <div className="headers flex flex-col justify-center items-center max-w-md mx-auto relative top-24 gap-8">
                     <div className="title font-extrabold text-5xl font-rubik drop-shadow-2xl text-gray-900">HashFunder</div>
-                    <div className='text-center'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi vero placeat praesentium hic necessitatibus sint facere totam dolore maiores suscipit beatae inventore, nulla explicabo sunt fugit consectetur sit obcaecati veniam blanditiis voluptate!</div>
+                    <div className='text-center'>A decentralized platform using blockchain that automatically handles all fundraising AND disputes. All the transaction made by fundraiser through raised money is transparent and donors can vote and file for disputes. Users can donate and get added to the Raise verification system.
+                    </div>
                     <div className="buttons">
                         <Link to={'/raise'}>
                             <button disabled={!providerConnected} className='raisebtn p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:bg-slate-50 font-rubik flex gap-2 active:border-2'>
