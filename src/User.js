@@ -5,15 +5,21 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import 'react-circular-progressbar/dist/styles.css';
 import { AppConfig } from './context/AppConfig';
+import { useNavigate } from 'react-router-dom';
 function User() {
-    const { returnRaiseProgress, infoRecieved } = useContext(AppConfig);
+    const { returnRaiseProgress, infoRecieved, setRouteIndexMore } = useContext(AppConfig);
     const [loader, setLoader] = useState(false)
     const [raiseInfo, setRaiseInfo] = useState([])
+    const navigate = useNavigate();
     const userData = async () => {
         setLoader(true);
         const temp = await returnRaiseProgress();
         setRaiseInfo(temp);
         setLoader(false);
+    }
+    const moreInfo = (indexOfRaise) => {
+        setRouteIndexMore(indexOfRaise);
+        navigate('/sendtransac')
     }
     useEffect(() => {
         userData();
@@ -34,7 +40,8 @@ function User() {
                                     <div>
                                         <h3 className='font-rubik font-semibold text-lg'>{rinfo[0][4]}</h3>
                                         <p className='max-w-sm'>{rinfo[0][5]}</p>
-                                        <button className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>More</button>
+                                        {(parseInt(rinfo[0][0]._hex)) - (parseInt(rinfo[0][1]._hex)) === 0 ? <button onClick={() => moreInfo(rinfo[1])} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>More</button> : ""}
+
                                     </div>
                                     <div className="progressbar font-rubik font-semibold" style={{ width: 100, height: 100 }}>
                                         <CircularProgressbar value={((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(2)} text={((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(2) === 100 ? "Complete" : ((parseInt(rinfo[0][0]._hex)) / (parseInt(rinfo[0][1]._hex)) * 100).toFixed(1) + "% raised"} styles={buildStyles({

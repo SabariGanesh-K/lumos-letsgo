@@ -1,18 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import MoneyIcon from '@mui/icons-material/Money';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AppConfig } from './context/AppConfig';
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
 import { Box, Button, CircularProgress, Modal, Typography } from '@mui/material';
 import Money from '@mui/icons-material/Money';
 import { MoneyOutlined } from '@mui/icons-material';
 function Home() {
-    const { providerConnected, returnAllRaiseProgress, donateToRaise } = useContext(AppConfig);
+    const { providerConnected, returnAllRaiseProgress, donateToRaise, setRouteIndexVote } = useContext(AppConfig);
     const [loader, setLoader] = useState(false)
     const [dashboardRaises, setDashboardRaises] = useState([])
     const [raiseId, setRaiseId] = useState();
     const [donateAmt, setDonateAmt] = useState("")
+
+    const navigate = useNavigate();
+
+    const moreInfo = (indexOfRaise) => {
+        setRouteIndexVote(indexOfRaise);
+        navigate('/vote');
+    }
 
     // modal
     const [open, setOpen] = React.useState(false);
@@ -33,6 +40,7 @@ function Home() {
         boxShadow: 24,
         p: 4,
     };
+    /// modal
 
     const userData = async () => {
         setLoader(true);
@@ -70,7 +78,7 @@ function Home() {
                     </div>
                 </Box>
             </Modal>
-            <main className='maindash bg-gradient-to-b from-red-600 to-pink-600 m-0 pb-20'>
+            <main className='maindash bg-gradient-to-b from-red-600 to-pink-600 m-0 pb-32'>
                 <div className="headers flex flex-col justify-center items-center max-w-md mx-auto relative top-24 gap-8">
                     <div className="title font-extrabold text-5xl font-rubik drop-shadow-2xl text-gray-900">HashFunder</div>
                     <div className='text-center'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi vero placeat praesentium hic necessitatibus sint facere totam dolore maiores suscipit beatae inventore, nulla explicabo sunt fugit consectetur sit obcaecati veniam blanditiis voluptate!</div>
@@ -95,7 +103,8 @@ function Home() {
                                         <h3 className='font-rubik font-semibold text-lg'>{rinfo[0][4]}</h3>
                                         <p className='max-w-sm font-rubik'>{rinfo[0][5]}</p>
                                         <div className='flex gap-4 mt-2'>
-                                            <button className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>More</button>
+                                            {(parseInt(rinfo[0][0]._hex)) - (parseInt(rinfo[0][1]._hex)) === 0 ? <button onClick={() => moreInfo(dashboardRaises.indexOf(rinfo))} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>Vote</button> : ""}
+
                                             <button onClick={() => handleOpen(dashboardRaises.indexOf(rinfo))} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg m-2 drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2'>Donate</button>
                                         </div>
                                     </div>

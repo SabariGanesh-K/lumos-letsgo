@@ -27,13 +27,13 @@ function MakeRaise() {
                     <div className="amt flex flex-col gap-4 justify-center">
                         <div className='font-bold text-2xl font-rubik drop-shadow-2xl text-slate-900'>Target Fund</div>
                         <div className='flex items-center gap-3'>
-                            <input value={funds} onChange={e => setFunds(e.target.value)} type="text" className='w-20 px-2 py-1 rounded-lg focus-within:bg-purple-200 shadow-md shadow-purple-600 outline-none' /> <p className='font-semibold font-rubik'>ETH</p>
+                            <input value={funds} onChange={e => setFunds(e.target.value)} type="text" className='w-20 px-2 py-1 rounded-lg focus-within:bg-purple-200 shadow-md shadow-purple-600 outline-none' /> <p className='font-semibold font-rubik'>Tokens</p>
                         </div>
 
                     </div>
-                    <div className='conditons flex'>
+                    <div className='conditons flex gap-2'>
                         <input type="checkbox" className='ml-0' />
-                        <div>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolore sapiente excepturi vitae?</div>
+                        <div className='font-rubik'>Accept terms and conditions for making a raise through this decentralised app!</div>
                     </div>
                     <button onClick={() => makeRaise(parseInt(funds), title, description)} className='p-2 bg-gradient-to-l from-purple-600 to-pink-800 rounded-lg  drop-shadow-lg hover:scale-105 transition-all ease-in-out hover:drop-shadow-2xl active:border-2 font-rubik flex gap-2 w-fit'> <div>Publish Raise</div> </button>
                 </div>

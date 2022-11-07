@@ -14,8 +14,9 @@ contract Lock {
         uint256 against_votes;
         uint256 id;
         uint256 start;
+        // address[] voters;
     }
-    mapping(uint256 => mapping(address => bool)) public voted;
+    mapping(uint256 => mapping(uint256 => mapping(address => bool))) voters;
     mapping(address => bool) public raisingStat;
     mapping(address => uint256[]) public raiseIds;
     struct UserInfo {
@@ -42,10 +43,11 @@ contract Lock {
 
     mapping(uint256 => mapping(address => bool)) public donors;
     mapping(uint256 => Transaction[]) public transactions;
+    //   Transaction[] transactions;
     uint256 RInd;
     uint256 Tind;
     uint256 raisect;
-    uint256 counter;
+    uint256 public counter;
     mapping(address => UserInfo) public userInfo;
     mapping(uint256 => Raise) public raiseInfo;
 
@@ -67,6 +69,7 @@ contract Lock {
         raiseInfo[counter].timeadded = block.timestamp;
         userInfo[msg.sender].currentRaise = counter;
         raiseIds[msg.sender].push(counter);
+        raisingStat[msg.sender] = true;
         counter++;
     }
 
@@ -83,12 +86,12 @@ contract Lock {
     }
 
     function handleTransaction(
-        address payable client,
+        address client,
         uint256 amount,
         uint256 raiseId,
         string memory purpose,
         string memory attach_evidence
-    ) external {
+    ) external payable {
         require(
             raiseInfo[raiseId].raising - raiseInfo[raiseId].raised == 0,
             "Raising not yet completed"
@@ -101,27 +104,35 @@ contract Lock {
             raiseInfo[raiseId].admin == msg.sender,
             "Only admin have access"
         );
-        require(
-            raiseInfo[raiseId].lastTransaction == 0 ||
-                block.timestamp - raiseInfo[raiseId].lastTransaction >= 1 days,
-            "Only 1 transaction allowed per day"
-        );
+        // require(raiseInfo[raiseId].lastTransaction==0||block.timestamp-raiseInfo[raiseId].lastTransaction>=1 days,"Only 1 transaction allowed per day");
         bool dispute = _checkDisputes(raiseId);
         if (dispute) {
             raiseInfo[raiseId].InDispute = true;
         }
         require(!dispute, "Raise entered dispute");
+
         uint256 id = transactions[raiseId].length;
-        (bool sent, bytes memory data) = client.call{value: amount * 10**18}(
-            ""
+        raiseInfo[raiseId].spent += amount;
+
+        payable(client).transfer(amount * 10**18);
+        raisingStat[msg.sender] = false;
+        address[] memory votersEmpty;
+        transactions[raiseId].push(
+            Transaction(
+                client,
+                amount,
+                purpose,
+                attach_evidence,
+                0,
+                0,
+                id,
+                block.timestamp
+            )
         );
-        require(sent, "Failed to send Ether");
-        transactions[raiseId][id].to = client;
-        transactions[raiseId][id].valuesent = amount;
-        transactions[raiseId][id].purpose = purpose;
-        transactions[raiseId][id].attach_evidence = attach_evidence;
-        transactions[raiseId][id].id = id;
-        transactions[raiseId][id].start = block.timestamp;
+    }
+
+    function balanceOf() public view returns (uint256) {
+        return address(this).balance;
     }
 
     function Vote(
@@ -133,26 +144,53 @@ contract Lock {
             transactions[raiseId].length >= transactioId,
             "Invalid transaction id"
         );
-        require(!voted[raiseId][msg.sender], "Voting completed by sender");
+        bool votestat = CheckVote(raiseId, transactioId);
+        require(votestat, "Voting completed by sender");
         require(donors[raiseId][msg.sender], "Only donors can vote");
         if (result) {
             transactions[raiseId][transactioId].for_votes++;
         } else {
             transactions[raiseId][transactioId].against_votes++;
         }
+        // transactions[raiseId][transactioId].voters.push(msg.sender);
+        // address client
+        // voters[raiseId][transactioId].push(msg.sender);
+        voters[raiseId][transactioId][msg.sender] = true;
+    }
+
+    function CheckVote(uint256 raiseId, uint256 transactionId)
+        public
+        view
+        returns (bool)
+    {
+        if (transactions[raiseId].length == 0) {}
+        for (uint256 i = 0; i < transactions[raiseId].length; i++) {
+            if (voters[raiseId][transactionId][msg.sender] == true) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function returnTransLegth() public view returns (uint256) {
+        return transactions[0].length;
     }
 
     function _checkDisputes(uint256 raiseId) private view returns (bool) {
         bool res = false;
-        for (uint256 i = 0; i < transactions[raiseId].length; i++) {
-            if (
-                block.timestamp - transactions[raiseId][i].start > 1 days &&
-                transactions[raiseId][i].against_votes >=
-                transactions[raiseId][i].for_votes
-            ) {
-                res = true;
+        if (transactions[raiseId].length == 0) {
+            return false;
+        } else {
+            for (uint256 i = 0; i < transactions[raiseId].length; i++) {
+                if (
+                    block.timestamp - transactions[raiseId][i].start > 1 days &&
+                    transactions[raiseId][i].against_votes >=
+                    transactions[raiseId][i].for_votes
+                ) {
+                    res = true;
 
-                break;
+                    break;
+                }
             }
         }
         return res;
