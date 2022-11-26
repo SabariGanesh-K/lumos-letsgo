@@ -24,6 +24,8 @@ npm run start
 
 https://drive.google.com/drive/folders/1oNcaaRyFvG5d3C4o5QsNVWTmS0hMo2CF
 
+## DOCS:-
+https://docs.google.com/presentation/d/1LBozudPFSf9pTSbrhyZ3HnjCTz2H-qjzjOmZjSW_YI0/edit?usp=sharing
 
 ## SNAPS:-
 
