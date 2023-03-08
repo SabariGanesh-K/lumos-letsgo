@@ -115,6 +115,7 @@ contract Lock {
         raiseInfo[raiseId].spent += amount;
 
         payable(client).transfer(amount * 10**18);
+        
         raisingStat[msg.sender] = false;
         address[] memory votersEmpty;
         transactions[raiseId].push(
